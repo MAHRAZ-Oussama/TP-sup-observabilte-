@@ -1,0 +1,20 @@
+groups:
+- name: MicroservicesAlerts
+  rules:
+  - alert: HighErrorRate
+    expr: sum(rate(http_errors_total[1m])) by (job) / sum(rate(http_requests_total[1m])) by (job) > 0.05
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Taux d'erreur trop élevé ({{ $labels.job }})"
+      description: "Le taux d'erreur du service {{ $labels.job }} vient de dépasser 5%."
+
+  - alert: HighLatency
+    expr: sum(rate(http_request_duration_seconds_sum[1m])) by (job) / sum(rate(http_request_duration_seconds_count[1m])) by (job) > 1.5
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Latence anormalement élevée ({{ $labels.job }})"
+      description: "La latence moyenne du service {{ $labels.job }} dépasse 1.5 seconde."
